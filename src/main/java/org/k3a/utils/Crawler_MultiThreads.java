@@ -62,6 +62,9 @@ public class Crawler_MultiThreads {
         FILENAME_POOL = new ThreadLocal<>();
     }
 
+    /**
+     * maxLevel -> 抓取的层次
+     */
     public static void start(int maxLevel) {
         ExecutorService pool = Executors.newCachedThreadPool();
         try {
