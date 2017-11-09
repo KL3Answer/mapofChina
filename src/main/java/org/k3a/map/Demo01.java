@@ -10,7 +10,7 @@ public class Demo01 {
 
     public static void main(String[] args) {
 
-        Crawler_AllInOne.start();
+        Crawler_AllInOne.start(3);
 
     }
 

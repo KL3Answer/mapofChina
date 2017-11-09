@@ -32,8 +32,6 @@ public class Crawler_AllInOne {
     private static final String REG_CSS;
     //寻找 中文
     private static final Pattern REG_CHINESE;
-    //限制 寻找的 层次
-    private static final int LEVEL = 2;
     //存储 的路径 和 文件全名
     private static final String FILEPATH;
     private static final String FILE;
@@ -55,12 +53,12 @@ public class Crawler_AllInOne {
     }
 
     /**
-     * 单个线程 存入 单个文件中
+     * 单个线程 存入 单个文件中 ,level -> 爬取 的最大层次
      */
-    public static void start() {
+    public static void start(int maxLevel) {
         try {
             Document doc = Jsoup.parse(new URL(BASEURi).openStream(), "GBK", BASEURi);
-            find(doc, 0);
+            find(doc, 0,maxLevel);
             System.out.println("finished...");
         } catch (IOException e) {
             e.printStackTrace();
@@ -69,7 +67,7 @@ public class Crawler_AllInOne {
 
     /**
      */
-    private static void find(Document doc, int initLevel) {
+    private static void find(Document doc, int initLevel,int maxLevel) {
         Elements select = doc.select("tr[class~=" + REG_CSS + "]");
         for (Element next : select) {
             Elements a = next.select("a");
@@ -89,10 +87,10 @@ public class Crawler_AllInOne {
                         e.printStackTrace();
                     }
                     //限制 层次
-                    if (initLevel < LEVEL) {
+                    if (initLevel < maxLevel) {
                         String baseUri = doc.baseUri();
                         href = baseUri.substring(0, baseUri.lastIndexOf("/")) + "/" + href;
-                        overAgain(href, initLevel, 4);
+                        overAgain(href, initLevel,maxLevel, 4);
                     }
                 }
             }
@@ -102,18 +100,18 @@ public class Crawler_AllInOne {
     /**
      * 失败 则 尝试 times 遍后 放弃
      */
-    private static void overAgain(String href, int level, int times) {
+    private static void overAgain(String href, int level,int maxLevel, int times) {
         try {
             Document doc = Jsoup.parse(new URL(href).openStream(), "GBK", href);
             //避免网站挂掉
             Thread.sleep(100);
-            find(doc, level + 1);
+            find(doc, level + 1,maxLevel);
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error("<---------" + href + "-------->");
             while (times > 0) {
                 times--;
-                overAgain(href, level, times);
+                overAgain(href, level,maxLevel, times);
             }
         }
     }

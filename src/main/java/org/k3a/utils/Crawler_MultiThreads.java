@@ -62,14 +62,14 @@ public class Crawler_MultiThreads {
         FILENAME_POOL = new ThreadLocal<>();
     }
 
-    public static void start() {
+    public static void start(int maxLevel) {
         ExecutorService pool = Executors.newCachedThreadPool();
         try {
             Document doc = Jsoup.parse(new URL(BASE_URI).openStream(), "GBK", BASE_URI);
             Elements select = doc.select("tr[class=provincetr]");
             //i7 6700k JDK 1.8 64位  跑了四个线程
             for (Element next : select) {
-                pool.execute(() -> find(doc.baseUri(), next, 0));
+                pool.execute(() -> find(doc.baseUri(), next, 0,maxLevel));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -89,16 +89,16 @@ public class Crawler_MultiThreads {
     /**
      *
      */
-    private static void find(String baseUri, Elements select, int initLevel) {
+    private static void find(String baseUri, Elements select, int initLevel,int maxLevel) {
         for (Element next : select) {
-            find(baseUri, next, initLevel);
+            find(baseUri, next, initLevel,maxLevel);
         }
     }
 
     /**
      *
      */
-    private static void find(String baseUri, Element next, int initLevel) {
+    private static void find(String baseUri, Element next, int initLevel,int maxLevel) {
         //获取 a 标签
         Elements a = next.select("a");
         for (Element next1 : a) {
@@ -121,9 +121,9 @@ public class Crawler_MultiThreads {
                     e.printStackTrace();
                 }
                 //限制 层次
-                if (initLevel < LEVEL) {
+                if (initLevel < maxLevel) {
                     href = baseUri.substring(0, baseUri.lastIndexOf("/")) + "/" + href;
-                    overAgain(href, initLevel, 4);
+                    overAgain(href, initLevel,maxLevel, 4);
                 }
             }
         }
@@ -132,19 +132,19 @@ public class Crawler_MultiThreads {
     /**
      * 失败 则 尝试 times 遍后 放弃
      */
-    private static void overAgain(String href, int level, int times) {
+    private static void overAgain(String href, int level,int maxLevel, int times) {
         try {
             Document doc = Jsoup.parse(new URL(href).openStream(), "GBK", href);
             Elements select = doc.select("tr[class~=(city|county|town)tr]");
             //避免网站挂掉
             Thread.sleep(100);
-            find(href, select, level + 1);
+            find(href, select, level + 1,maxLevel);
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error("<---------failed on:" + href + "-------->");
             while (times > 0) {
                 times--;
-                overAgain(href, level, times);
+                overAgain(href, level, times,maxLevel);
             }
         }
     }
