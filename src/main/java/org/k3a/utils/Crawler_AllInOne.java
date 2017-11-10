@@ -27,38 +27,35 @@ import java.util.regex.Pattern;
 public class Crawler_AllInOne {
     private static final Logger LOGGER = Logger.getLogger(Crawler_AllInOne.class);
     //统计局 url
-    private static final String BASEURi;
+    private static final String BASEURi = "http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2016/index.html";
     //行政单位名的css 样式
-    private static final String REG_CSS;
+    private static final String REG_CSS = "(province|city|county|town)tr";
     //寻找 中文
-    private static final Pattern REG_CHINESE;
+    private static final Pattern REG_CHINESE = Pattern.compile("[\\u4e00-\\u9fa5]+");
     //存储 的路径 和 文件全名
-    private static final String FILEPATH;
-    private static final String FILE;
+    private static final String FILEPATH = "/mapInfo/all_in_one/";
 
-    static {
-        FILEPATH = "/mapInfo/all_in_one/";
+    public static void run(int maxLevel) {
+        new Crawler_AllInOne().start(maxLevel);
+    }
+
+    private String file;
+
+    private Crawler_AllInOne() {
         //create directory
         File file = new File(FILEPATH);
         if (!file.exists()) file.mkdirs();
         //避免覆盖 上一次 的文件
-        FILE = FILEPATH + "all_in_one." + UUID.randomUUID() + ".txt";
-        //
-        REG_CSS = "(province|city|county|town)tr";
-        //
-        BASEURi = "http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2016/index.html";
-        //
-        REG_CHINESE = Pattern.compile("[\\u4e00-\\u9fa5]+");
-
+        this.file = FILEPATH + "all_in_one." + UUID.randomUUID() + ".txt";
     }
 
     /**
-     * 单个线程 存入 单个文件中 ,level -> 爬取 的最大层次
+     * 单个线程 存入 单个文件中 , level -> 爬取 的最大层次
      */
-    public static void start(int maxLevel) {
+    private void start(int maxLevel) {
         try {
             Document doc = Jsoup.parse(new URL(BASEURi).openStream(), "GBK", BASEURi);
-            find(doc, 0,maxLevel);
+            find(doc, 0, maxLevel);
             System.out.println("finished...");
         } catch (IOException e) {
             e.printStackTrace();
@@ -67,7 +64,7 @@ public class Crawler_AllInOne {
 
     /**
      */
-    private static void find(Document doc, int initLevel,int maxLevel) {
+    private void find(Document doc, int initLevel, int maxLevel) {
         Elements select = doc.select("tr[class~=" + REG_CSS + "]");
         for (Element next : select) {
             Elements a = next.select("a");
@@ -79,9 +76,10 @@ public class Crawler_AllInOne {
                 if (matcher.find()) {
                     //记录 地名
                     String name = line(initLevel) + matcher.group();
-                    try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE, true))) {
+                    try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
                         writer.write(name);
-//                        writer.newLine();//compact or beautified
+                        //compact or beautified
+                        //writer.newLine();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -89,7 +87,7 @@ public class Crawler_AllInOne {
                     if (initLevel < maxLevel) {
                         String baseUri = doc.baseUri();
                         href = baseUri.substring(0, baseUri.lastIndexOf("/")) + "/" + href;
-                        overAgain(href, initLevel,maxLevel, 4);
+                        overAgain(href, initLevel, maxLevel, 4);
                     }
                 }
             }
@@ -99,18 +97,18 @@ public class Crawler_AllInOne {
     /**
      * 失败 则 尝试 times 遍后 放弃
      */
-    private static void overAgain(String href, int level,int maxLevel, int times) {
+    private void overAgain(String href, int level, int maxLevel, int times) {
         try {
             Document doc = Jsoup.parse(new URL(href).openStream(), "GBK", href);
             //避免网站挂掉
             Thread.sleep(100);
-            find(doc, level + 1,maxLevel);
+            find(doc, level + 1, maxLevel);
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error("<---------" + href + "-------->");
             while (times > 0) {
                 times--;
-                overAgain(href, level,maxLevel, times);
+                overAgain(href, level, maxLevel, times);
             }
         }
     }

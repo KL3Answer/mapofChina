@@ -9,8 +9,7 @@ import org.k3a.utils.Crawler_AllInOne;
 public class Demo01 {
 
     public static void main(String[] args) {
-        Crawler_AllInOne.start(4);
-
+        Crawler_AllInOne.run(4);
     }
 
 }
