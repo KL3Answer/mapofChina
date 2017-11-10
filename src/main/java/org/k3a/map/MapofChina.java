@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
  * Created by XPS15
  * on 2017/11/9  14:36
  */
-@SuppressWarnings({"SpellCheckingInspection", "ArraysAsListWithZeroOrOneArgument"})
+@SuppressWarnings({"SpellCheckingInspection", "ArraysAsListWithZeroOrOneArgument", "WeakerAccess"})
 public class MapofChina {
     private static final String TOP;
     private static final String CHINESE_REG;
@@ -33,37 +33,28 @@ public class MapofChina {
 
     }
 
-    public static void main(String[] args) {
-
-
-        System.out.println("fullpath:\n" + fullPath("乌鲁木齐"));
-
-    }
-
+    /**
+     * 获取 全路径
+     */
     public static String fullPath(String search) {
         StringBuilder path = new StringBuilder(search);
-        String rs = "";
         do {
-            rs = upperLevel(search);
-            search = rs;
-            path.insert(0, rs);
-        } while (!"".equals(rs));
+            search = upperLevel(search);
+            boolean isAmbiguous = false;
+            for (String e : AMBIGUOUS) {
+                if (search.contains(e)) {
+                    isAmbiguous = true;
+                    break;
+                }
+            }
+            if (!isAmbiguous) path.insert(0, search);
+        } while (!"".equals(search));
 
-        String result = path.toString();
-        //消除 术语
-        result = result.replace("市辖区", "市");
-        //消除 叠词
-        Matcher matcher = REDUPLICATION.matcher(result);
-        while (matcher.find()) {
-            String group = matcher.group(1);
-            result = result.replace(group + group, group);
-        }
-        return result;
+        return path.toString();
     }
 
-
     /**
-     * find upper level technically
+     * find upper level ,technically
      */
     public static String upperLevel(String search) {
         try {
@@ -98,6 +89,19 @@ public class MapofChina {
             e.printStackTrace();
         }
         return "";
+    }
+
+    /**
+     * get conventional superior level(ignore AMBIGUOUS words)
+     */
+    public static String superior(String search) {
+        String result = upperLevel(search);
+        for (String e : AMBIGUOUS) {
+            if (result.contains(e)) {
+                result = upperLevel(result);
+            }
+        }
+        return result;
     }
 
 
