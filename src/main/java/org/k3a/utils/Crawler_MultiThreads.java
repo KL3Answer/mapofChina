@@ -32,8 +32,6 @@ public class Crawler_MultiThreads {
     private static final String BASE_URI;
     //判断中文
     private static final Pattern CHINESE;
-    //限制 层次
-    private static final int LEVEL;
     //存储 文件夹
     private static final String FILE_PATH;
     //后缀
@@ -56,8 +54,6 @@ public class Crawler_MultiThreads {
         BASE_URI = "http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2016/index.html";
         //判断中文
         CHINESE = Pattern.compile("[\\u4e00-\\u9fa5]+");
-        //限制层次
-        LEVEL = 1;
         //文件名池
         FILENAME_POOL = new ThreadLocal<>();
     }
@@ -116,7 +112,6 @@ public class Crawler_MultiThreads {
                 }
                 //记录 地名
                 String name = line(initLevel) + matcher.group();
-                LOGGER.info(name);
                 try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH + FILENAME_POOL.get() + FILE_SUFFIX, true))) {
                     writer.write(name);
                     writer.newLine();

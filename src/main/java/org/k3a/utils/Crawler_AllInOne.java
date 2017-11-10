@@ -79,10 +79,9 @@ public class Crawler_AllInOne {
                 if (matcher.find()) {
                     //记录 地名
                     String name = line(initLevel) + matcher.group();
-                    LOGGER.info(name);
                     try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE, true))) {
                         writer.write(name);
-//                        writer.newLine();
+//                        writer.newLine();//compact or beautified
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
