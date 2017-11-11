@@ -27,7 +27,7 @@ public class MapofChina {
         //中文 正则
         CHINESE_REG = "[\\u4e00-\\u9fa5]+";
         //county 级别 数据 单文件
-        COUNTYDATA = new File(MapofChina.class.getClassLoader().getResource("").getPath() + "all_in_one/all_in_one_county_compact.txt");
+        COUNTYDATA = new File(MapofChina.class.getClassLoader().getResource("").getPath() + "all_in_one/all_in_one_town_compact.txt");
         //遇到这些词时，需要再向上一级来寻找通俗意义上的上一级
         AMBIGUOUS = Arrays.asList("市辖区");
         //去掉 重复 字段
