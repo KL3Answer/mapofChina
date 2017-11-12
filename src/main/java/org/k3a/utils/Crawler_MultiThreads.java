@@ -30,8 +30,8 @@ public class Crawler_MultiThreads {
     private static final Logger LOGGER = Logger.getLogger(Crawler_MultiThreads.class);
     //统计局 统计用区 划分 url
     private static final String BASE_URI = "http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2016/index.html";
-    //判断中文
-    private static final Pattern CHINESE = Pattern.compile("[\\u4e00-\\u9fa5]+");
+    //判断地名
+    private static final Pattern CHINESE = Pattern.compile("[\\u4e00-\\u9fa5（）()]+");
     //后缀
     private static final String FILE_SUFFIX = ".txt";
     //当前线程文件名

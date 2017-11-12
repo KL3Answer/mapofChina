@@ -30,8 +30,8 @@ public class Crawler_AllInOne {
     private static final String BASEURi = "http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2016/index.html";
     //行政单位名的css 样式
     private static final String REG_CSS = "(province|city|county|town)tr";
-    //寻找 中文
-    private static final Pattern REG_CHINESE = Pattern.compile("[\\u4e00-\\u9fa5]+");
+    //寻找地名
+    private static final Pattern REG_CHINESE = Pattern.compile("[\\u4e00-\\u9fa5（）()]+");
     //存储 的路径 和 文件全名
     private static final String FILEPATH = "/mapInfo/all_in_one/";
 
