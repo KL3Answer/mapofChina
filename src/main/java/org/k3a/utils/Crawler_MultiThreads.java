@@ -1,6 +1,5 @@
 package org.k3a.utils;
 
-import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -14,6 +13,8 @@ import java.net.URL;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,7 +28,7 @@ import java.util.regex.Pattern;
  */
 @SuppressWarnings({"ResultOfMethodCallIgnored", "ConstantConditions"})
 public class Crawler_MultiThreads {
-    private static final Logger LOGGER = Logger.getLogger(Crawler_MultiThreads.class);
+    private static final Logger LOGGER = Logger.getLogger(Crawler_MultiThreads.class.getName());
     //统计局 统计用区 划分 url
     private static final String BASE_URI = "http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2016/index.html";
     //判断地名
@@ -132,7 +133,7 @@ public class Crawler_MultiThreads {
             find(href, select, level + 1, maxLevel);
         } catch (Exception e) {
             e.printStackTrace();
-            LOGGER.error("<---------failed on:" + href + "-------->");
+            LOGGER.log(Level.WARNING, "<---------failed on:" + href + "-------->");
             while (times > 0) {
                 times--;
                 overAgain(href, level, times, maxLevel);

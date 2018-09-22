@@ -1,6 +1,5 @@
 package org.k3a.utils;
 
-import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -12,6 +11,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,7 +26,7 @@ import java.util.regex.Pattern;
  */
 @SuppressWarnings("ResultOfMethodCallIgnored")
 public class Crawler_AllInOne {
-    private static final Logger LOGGER = Logger.getLogger(Crawler_AllInOne.class);
+    private static final Logger LOGGER = Logger.getLogger(Crawler_AllInOne.class.getName());
     //统计局 url
     private static final String BASEURi = "http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2016/index.html";
     //行政单位名的css 样式
@@ -105,7 +106,7 @@ public class Crawler_AllInOne {
             find(doc, level + 1, maxLevel);
         } catch (Exception e) {
             e.printStackTrace();
-            LOGGER.error("<---------" + href + "-------->");
+            LOGGER.log(Level.WARNING, "<---------" + href + "-------->");
             while (times > 0) {
                 times--;
                 overAgain(href, level, maxLevel, times);
